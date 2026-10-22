@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#14532d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <title>Data Entry Register v8</title>
+  <style>
+    :root{--g:#14532d;--g2:#166534;--bg:#f3f6f4;--line:#dbe3dd;--text:#17221a;--muted:#5d6b61}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    header{background:var(--g);color:#fff;padding:18px 16px}
+    header h1{margin:0;font-size:22px}
+    header p{margin:4px 0 0;color:#d9f5df;font-size:13px}
+    main{max-width:1100px;margin:auto;padding:14px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:14px;box-shadow:0 2px 8px #12220f0a}
+    h2{font-size:18px;margin:0 0 12px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+    label{display:block;font-weight:650;font-size:13px;margin-bottom:5px}
+    input,select,textarea{width:100%;padding:11px;border:1px solid #cbd5ce;border-radius:9px;background:white;color:var(--text);font:inherit;min-width:0}
+    textarea{min-height:75px;resize:vertical}
+    .full{grid-column:1/-1}
+    .buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button,.filebtn{border:0;border-radius:9px;padding:10px 13px;font:600 14px system-ui;cursor:pointer;background:var(--g2);color:white;display:inline-flex;align-items:center;justify-content:center}
+    button.secondary,.filebtn.secondary{background:#e8eee9;color:#203a27;border:1px solid #d5dfd7}
+    button.danger{background:#fee2e2;color:#991b1b}
+    button.small{padding:7px 9px;font-size:12px}
+    .searchrow{display:flex;gap:8px;align-items:center}
+    .searchrow input{flex:1}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+    .stat{background:#f5f8f5;border:1px solid var(--line);padding:10px;border-radius:10px}
+    .stat span{display:block;color:var(--muted);font-size:12px}
+    .stat strong{font-size:18px;overflow-wrap:anywhere}
+    .tablewrap{overflow-x:auto}
+    table{border-collapse:collapse;width:100%;min-width:900px}
+    th,td{text-align:left;padding:10px;border-bottom:1px solid #e5ebe6;vertical-align:top;font-size:13px}
+    th{background:#f5f8f5;position:sticky;top:0}
+    td .desc{white-space:pre-wrap;max-width:220px;overflow-wrap:anywhere}
+    .pill{display:inline-block;border-radius:20px;padding:3px 8px;font-size:11px;font-weight:700;background:#e5e7eb;color:#374151}
+    .paid{background:#dcfce7;color:#166534}
+    .partial{background:#fef3c7;color:#92400e}
+    .unpaid{background:#fee2e2;color:#991b1b}
+    .active{background:#dbeafe;color:#1d4ed8}
+    .empty{text-align:center;color:var(--muted);padding:25px}
+    .note{font-size:12px;color:var(--muted);margin:9px 0 0}
+    .hidden{display:none!important}
+    @media(min-width:760px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.full{grid-column:span 3}}
+    @media(max-width:420px){main{padding:9px}.panel{padding:12px}.grid{gap:9px}.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:auto}.searchrow{flex-direction:column;align-items:stretch}.searchrow button{width:100%}}
+
+    /* Save Successful Pop-up Modal Styles */
+    .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:99999;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;backdrop-filter:blur(3px)}
+    .modal-overlay.show{opacity:1;visibility:visible}
+    .modal-box{background:#fff;border-radius:16px;width:90%;max-width:400px;padding:24px 20px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);transform:scale(.85);transition:transform .25s cubic-bezier(.175,.885,.32,1.275)}
+    .modal-overlay.show .modal-box{transform:scale(1)}
+    .modal-icon{width:62px;height:62px;background:#dcfce7;color:#166534;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;margin:0 auto 12px;border:2px solid #86efac}
+    .modal-title{font-size:20px;font-weight:700;color:#14532d;margin:0 0 4px}
+    .modal-subtitle{font-size:14px;color:#5d6b61;margin:0 0 14px}
+    .modal-details{background:#f5f8f5;border:1px solid var(--line);border-radius:10px;padding:11px 13px;text-align:left;font-size:13px;margin-bottom:16px;line-height:1.6}
+    .modal-details div{display:flex;justify-content:space-between;margin-bottom:3px}
+    .modal-details div:last-child{margin-bottom:0}
+    .modal-details strong{color:var(--text)}
+    .modal-btn{background:var(--g2);color:#fff;border:0;border-radius:9px;padding:11px 20px;font:600 14px system-ui;cursor:pointer;width:100%}
+    .modal-btn:hover{background:var(--g)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Data Entry Register</h1>
+    <p>Records • Total Amount • Payment tracking • Search • Delete • Backup</p>
+  </header>
+  <main>
+    <section class="panel">
+      <h2 id="formTitle">Add New Record</h2>
+      <form id="entryForm">
+        <input type="hidden" id="recordId">
+        <div class="grid">
+          <div><label for="name">Name *</label><input id="name" required maxlength="120" placeholder="Enter name"></div>
+          <div><label for="certificate">Certificate No</label><input id="certificate" maxlength="100" placeholder="Certificate number"></div>
+          <div><label for="totalAmount">Total Amount</label><input id="totalAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+          <div><label for="amountPaid">Amount Paid</label><input id="amountPaid" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+          <div><label for="remaining">Remaining</label><input id="remaining" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+          <div><label for="payment">Payment Type</label><select id="payment"><option>Full Paid</option><option>Partial Paid</option><option>Unpaid</option></select></div>
+          <div><label for="status">Status</label><select id="status"><option>Active</option><option>Pending</option><option>Completed</option><option>On Hold</option><option>Inactive</option></select></div>
+          <div><label for="mobile">Mobile No / Reference No</label><input id="mobile" maxlength="120" placeholder="Phone or reference number"></div>
+          <div><label for="date">Date</label><input id="date" type="date"></div>
+          <div class="full"><label for="description">Description</label><textarea id="description" maxlength="2000" placeholder="Additional details..."></textarea></div>
+        </div>
+        <div class="buttons">
+          <button type="submit" id="saveBtn">Save Record</button>
+          <button type="button" class="secondary" id="clearBtn">Clear Form</button>
+        </div>
+        <p class="note">* Name is required. Remaining is calculated as Total Amount minus Amount Paid. Records are stored in this browser on this device.</p>
+      </form>
+    </section>
+    <section class="panel">
+      <h2>Records</h2>
+      <div class="stats">
+        <div class="stat"><span>Total Records</span><strong id="totalCount">0</strong></div>
+        <div class="stat"><span>Total Amount</span><strong id="totalAllAmount">0.00</strong></div>
+        <div class="stat"><span>Total Amount Paid</span><strong id="totalPaid">0.00</strong></div>
+        <div class="stat"><span>Total Remaining</span><strong id="totalRemaining">0.00</strong></div>
+      </div>
+      <div class="searchrow">
+        <input id="search" placeholder="Search name, certificate, mobile/reference, payment, status or description...">
+        <button type="button" class="secondary" id="clearSearch">Clear Search</button>
+      </div>
+      <div class="buttons">
+        <button type="button" id="exportCsv">Export Excel / CSV</button>
+        <button type="button" class="secondary" id="backup">Backup Data</button>
+        <label class="filebtn secondary" for="restoreFile">Restore Backup</label>
+        <input id="restoreFile" class="hidden" type="file" accept=".json,application/json">
+      </div>
+      <p class="note">Back up regularly. Browser data clearing or changing devices can remove local records.</p>
+      <div class="tablewrap" style="margin-top:12px">
+        <table>
+          <thead>
+            <tr>
+              <th>Serial No</th><th>Name</th><th>Certificate No</th><th>Total Amount</th><th>Amount Paid</th><th>Remaining</th><th>Payment Type</th><th>Status</th><th>Mobile / Reference</th><th>Date</th><th>Description</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="recordsBody"></tbody>
+        </table>
+        <div id="empty" class="empty">No records yet. Add your first record above.</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Save Successful Pop-up Modal -->
+  <div id="saveSuccessModal" class="modal-overlay" onclick="closeSaveSuccess(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-icon">&#10003;</div>
+      <h3 class="modal-title" id="modalTitle">Save Successful!</h3>
+      <p class="modal-subtitle" id="modalSubtitle">রেকর্ড সফলভাবে সংরক্ষিত হয়েছে</p>
+      <div class="modal-details" id="modalDetails"></div>
+      <button type="button" class="modal-btn" onclick="closeSaveSuccess()">OK / ঠিক আছে</button>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY='dataEntryRegister_v1';
+    const $=id=>document.getElementById(id);
+    let records=[];
+    try{records=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');if(!Array.isArray(records))records=[]}catch(e){records=[]}
+    const fields=['name','certificate','totalAmount','amountPaid','remaining','payment','status','mobile','date','description'];
+    
+    function persist(){localStorage.setItem(STORAGE_KEY,JSON.stringify(records));render()}
+    function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function money(v){return(Number(v)||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+    function readForm(){
+      const o={};
+      fields.forEach(f=>o[f]=$(f).value.trim());
+      o.totalAmount=Number(o.totalAmount)||0;
+      o.amountPaid=Number(o.amountPaid)||0;
+      o.remaining=Math.max(0,o.totalAmount-o.amountPaid);
+      return o;
+    }
+    function resetForm(){
+      $('entryForm').reset();
+      $('recordId').value='';
+      $('formTitle').textContent='Add New Record';
+      $('saveBtn').textContent='Save Record';
+      $('payment').value='Full Paid';
+      $('status').value='Active';
+    }
+
+    $('entryForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const o=readForm();
+      if(!o.name){alert('Please enter a name.');return}
+      const id=$('recordId').value;
+      const certKey=String(o.certificate||'').trim().toLowerCase();
+      if(certKey){
+        const duplicate=records.find(r=>String(r.certificate||'').trim().toLowerCase()===certKey&&r.id!==id);
+        if(duplicate){
+          alert('এই Certificate No আগে থেকেই এন্ট্রি করা আছে। অনুগ্রহ করে অন্য Certificate No দিন।');
+          $('certificate').focus();
+          return;
+        }
+      }
+      if(id){
+        const i=records.findIndex(r=>r.id===id);
+        if(i>=0)records[i]={...records[i],...o,updatedAt:new Date().toISOString()};
+      }else{
+        records.unshift({...o,id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()),createdAt:new Date().toISOString()});
+      }
+      const isUpdate = Boolean(id);
+      persist();
+      resetForm();
+      showSaveSuccess(o, isUpdate);
+    });
+
+    $('clearBtn').addEventListener('click',resetForm);
+    ['totalAmount','amountPaid'].forEach(id=>$(id).addEventListener('input',()=>{
+      $('remaining').value=Math.max(0,(Number($('totalAmount').value)||0)-(Number($('amountPaid').value)||0)).toFixed(2);
+    }));
+
+    function editRecord(id){
+      const r=records.find(x=>x.id===id);
+      if(!r)return;
+      fields.forEach(f=>$(f).value=r[f]??(f==='totalAmount'?0:''));
+      $('remaining').value=Math.max(0,(Number($('totalAmount').value)||0)-(Number($('amountPaid').value)||0)).toFixed(2);
+      $('recordId').value=id;
+      $('formTitle').textContent='Edit Record';
+      $('saveBtn').textContent='Update Record';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function deleteRecord(id){
+      const r=records.find(x=>x.id===id);
+      if(r&&confirm('Delete record for '+r.name+'? This cannot be undone unless you have a backup.')){
+        records=records.filter(x=>x.id!==id);
+        persist();
+        if($('recordId').value===id)resetForm();
+      }
+    }
+
+    function render(){
+      const q=$('search').value.trim().toLowerCase(),list=records.filter(r=>fields.some(f=>String(r[f]??'').toLowerCase().includes(q)));
+      $('recordsBody').innerHTML=list.map((r,index)=>{
+        let p=r.payment||'Full Paid';
+        if(p==='Fully Paid')p='Full Paid';
+        if(p==='Partially Paid')p='Partial Paid';
+        if(p==='Total Due')p='Unpaid';
+        return `<tr>
+          <td>${index+1}</td>
+          <td><strong>${esc(r.name)}</strong></td>
+          <td>${esc(r.certificate)}</td>
+          <td>${money(r.totalAmount)}</td>
+          <td>${money(r.amountPaid)}</td>
+          <td>${money(r.remaining)}</td>
+          <td><span class="pill ${p==='Full Paid'?'paid':p==='Unpaid'?'unpaid':'partial'}">${esc(p)}</span></td>
+          <td><span class="pill ${r.status==='Active'||r.status==='Completed'?'active':''}">${esc(r.status)}</span></td>
+          <td>${esc(r.mobile)}</td>
+          <td>${esc(r.date)}</td>
+          <td><div class="desc">${esc(r.description)}</div></td>
+          <td>
+            <div class="buttons" style="margin:0;flex-wrap:nowrap">
+              <button class="small" data-edit="${esc(r.id)}">Edit</button>
+              <button class="small danger" data-delete="${esc(r.id)}">Delete</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+      $('empty').classList.toggle('hidden',list.length>0);
+      if(!list.length)$('empty').textContent=q?'No matching records found.':'No records yet. Add your first record above.';
+      $('totalCount').textContent=records.length;
+      $('totalAllAmount').textContent=money(records.reduce((s,r)=>s+(Number(r.totalAmount)||0),0));
+      $('totalPaid').textContent=money(records.reduce((s,r)=>s+(Number(r.amountPaid)||0),0));
+      $('totalRemaining').textContent=money(records.reduce((s,r)=>s+(Number(r.remaining)||0),0));
+    }
+
+    $('recordsBody').addEventListener('click',e=>{
+      const a=e.target.closest('[data-edit]'),b=e.target.closest('[data-delete]');
+      if(a)editRecord(a.dataset.edit);
+      if(b)deleteRecord(b.dataset.delete);
+    });
+
+    $('search').addEventListener('input',render);
+    $('clearSearch').addEventListener('click',()=>{
+      $('search').value='';
+      render();
+    });
+
+    function download(name,content,type){
+      const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;
+      a.download=name;
+      a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }
+
+    $('exportCsv').addEventListener('click',()=>{
+      const h=['Serial No','Name','Certificate No','Total Amount','Amount Paid','Remaining','Payment Type','Status','Mobile No / Reference No','Date','Description'],
+            rows=records.map((r,index)=>[index+1,r.name,r.certificate,r.totalAmount??0,r.amountPaid,r.remaining,r.payment,r.status,r.mobile,r.date||'',r.description]);
+      download('data-entry-records.csv','\ufeff'+[h,...rows].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),'text/csv;charset=utf-8;');
+    });
+
+    $('backup').addEventListener('click',()=>{
+      download('data-entry-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({app:'Data Entry Register',version:3,exportedAt:new Date().toISOString(),records},null,2),'application/json');
+    });
+
+    $('restoreFile').addEventListener('change',async e=>{
+      const file=e.target.files[0];
+      if(!file)return;
+      try{
+        const data=JSON.parse(await file.text()),incoming=Array.isArray(data)?data:data.records;
+        if(!Array.isArray(incoming))throw Error('Invalid backup');
+        if(!confirm('Restore '+incoming.length+' records? This replaces current records. Export a backup first if needed.'))return;
+        records=incoming.map(r=>({...r,id:String(r.id||((crypto.randomUUID&&crypto.randomUUID())||Date.now()+Math.random())),payment:({'Fully Paid':'Full Paid','Partially Paid':'Partial Paid','Total Due':'Unpaid'}[r.payment]||(['Full Paid','Partial Paid','Unpaid'].includes(r.payment)?r.payment:'Full Paid'))}));
+        persist();
+        resetForm();
+        alert('Backup restored successfully');
+      }catch(err){
+        alert('Could not restore this file. Please choose a valid backup JSON file.');
+      }finally{
+        e.target.value='';
+      }
+    });
+
+    render();
+    if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
+    /* Modal Controller Functions */
+    function showSaveSuccess(record, isUpdated) {
+      $('modalTitle').textContent = isUpdated ? 'Update Successful!' : 'Save Successful!';
+      $('modalSubtitle').textContent = isUpdated ? 'রেকর্ড সফলভাবে আপডেট করা হয়েছে' : 'রেকর্ড সফলভাবে সংরক্ষিত হয়েছে';
+      $('modalDetails').innerHTML = '<div><span>Name:</span> <strong>' + esc(record.name) + '</strong></div>' +
+        (record.certificate ? '<div><span>Certificate No:</span> <strong>' + esc(record.certificate) + '</strong></div>' : '') +
+        '<div><span>Total Amount:</span> <strong>' + money(record.totalAmount) + '</strong></div>' +
+        '<div><span>Amount Paid:</span> <strong>' + money(record.amountPaid) + '</strong></div>' +
+        '<div><span>Remaining:</span> <strong>' + money(record.remaining) + '</strong></div>' +
+        '<div><span>Payment:</span> <strong>' + esc(record.payment || 'Full Paid') + '</strong></div>';
+      $('saveSuccessModal').classList.add('show');
+    }
+
+    function closeSaveSuccess() {
+      $('saveSuccessModal').classList.remove('show');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeSaveSuccess();
+    });
+  </script>
+</body>
+  </html>
