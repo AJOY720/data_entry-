@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ডাউনলোড করুন • জমা-খরচ GitHub Pages ফাইল</title>
+  <style>
+    :root {
+      --primary: #176b52;
+      --primary-dark: #0f4d3a;
+      --bg: #f4fbf7;
+      --card-bg: #ffffff;
+      --text: #1b2e26;
+      --text-muted: #5e6f67;
+      --border: #d2e8dd;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hind Siliguri", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 680px;
+      width: 100%;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .header h1 {
+      color: var(--primary);
+      margin: 0 0 8px 0;
+      font-size: 26px;
+    }
+    .header p {
+      color: var(--text-muted);
+      margin: 0;
+      font-size: 15px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(23, 107, 82, 0.08);
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 19px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: #e8f5ee;
+      color: var(--primary);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: #d9efe4;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      background: #e2f4ea;
+      color: var(--primary);
+    }
+    .steps {
+      padding-left: 20px;
+      line-height: 1.7;
+    }
+    .steps li {
+      margin-bottom: 10px;
+    }
+    code {
+      background: #edf6f1;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: monospace;
+      color: var(--primary);
+    }
+    .toast {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #176b52;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-weight: 600;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌐 জমা-খরচ ওয়েব ফাইল ডাউনলোড কেন্দ্র</h1>
+      <p>মাসিক বাজেট সতর্কতা ও UPI অনলাইন পেমেন্ট সহ GitHub Pages-এ লাইভ ওয়েবসাইট চালু করুন</p>
+    </div>
+
+    <!-- DOWNLOAD BUTTONS -->
+    <div class="card">
+      <h2>📥 ফাইল ডাউনলোড অপশন <span class="badge">রেডি</span></h2>
+      <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+        নিচের যেকোনো বাটনে ক্লিক করে সরাসরি ফাইলটি সেভ করুন:
+      </p>
+
+      <div class="btn-group">
+        <a href="joma_khoroch_web.zip" download="joma_khoroch_web.zip" class="btn btn-primary" id="downloadZipBtn">
+          📦 ডাউনলোড সম্পূর্ণ জিপ ফাইল (joma_khoroch_web.zip)
+        </a>
+        <a href="web/index_standalone.html" download="index.html" class="btn btn-secondary" id="downloadHtmlBtn">
+          📄 একক ফাইল ডাউনলোড করুন (index.html — No Unzip Needed)
+        </a>
+        <button type="button" class="btn btn-secondary" id="copyCodeBtn">
+          📋 সম্পূর্ণ কোড ক্লিপবোর্ডে কপি করুন (GitHub-এ সরাসরি পেস্ট করতে)
+        </button>
+      </div>
+    </div>
+
+    <!-- QUICK GITHUB STEPS -->
+    <div class="card">
+      <h2>🚀 GitHub Pages-এ যেভাবে লাইভ করবেন (মাত্র ২ মিনিট)</h2>
+      <ol class="steps">
+        <li><strong>GitHub.com</strong>-এ গিয়ে একটি নতুন রিপোজিটরি তৈরি করুন (যেমন: <code>joma-khoroch</code>)।</li>
+        <li><strong>Add file</strong> ➔ <strong>Upload files</strong>-এ গিয়ে জিপ ফাইল থেকে আনজিপ করা ফাইলগুলো (অথবা সরাসরি একক <code>index.html</code>) আপলোড করে <strong>Commit changes</strong> বাটনে চাপুন।</li>
+        <li>রিপোজিটরির <strong>Settings</strong> ➔ <strong>Pages</strong>-এ যান।</li>
+        <li><strong>Branch</strong>-এ <code>main</code> সিলেক্ট করে <strong>Save</strong>-এ ক্লিক করুন।</li>
+        <li>১-২ মিনিটের মধ্যে আপনার ফ্রি ওয়েবসাইট লাইভ হয়ে যাবে!</li>
+      </ol>
+    </div>
+
+    <!-- FEATURES INCLUDED -->
+    <div class="card">
+      <h2>✨ নতুন যা যা যুক্ত করা হয়েছে</h2>
+      <ul style="padding-left: 20px; line-height: 1.6; color: var(--text-muted);">
+        <li><strong style="color: var(--text);">মাসিক বাজেট সতর্কতা:</strong> হোম স্ক্রিনে প্রগ্রেস বার, খরচ ৮০% পার হলে হলুদ ওয়ার্নিং এবং ১০০% পার হলে লাল ওভার-বাজেট অ্যালার্ট।</li>
+        <li><strong style="color: var(--text);">UPI অনলাইন পেমেন্ট:</strong> বিকাশ-এর স্থানে "UPI অনলাইন" ডিফল্ট হিসেবে যুক্ত।</li>
+        <li><strong style="color: var(--text);">Date-to-Date রিপোর্ট:</strong> নির্দিষ্ট যেকোনো দুই তারিখের মধ্যবর্তী খরচের হিসাব।</li>
+        <li><strong style="color: var(--text);">স্বয়ংক্রিয় রিকারিং:</strong> প্রতি মাসের নির্দিষ্ট দিনে স্বয়ংক্রিয়ভাবে জমা বা খরচের এন্ট্রি যোগ।</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">✅ কোড সফলভাবে কপি হয়েছে!</div>
+
+  <script>
+    document.getElementById('copyCodeBtn').addEventListener('click', async () => {
+      try {
+        const res = await fetch('web/index_standalone.html');
+        const code = await res.text();
+        await navigator.clipboard.writeText(code);
+        const t = document.getElementById('toast');
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+      } catch (err) {
+        alert('কপি করার জন্য web/index_standalone.html ফাইলটি ওপেন করে কোড কপি করুন।');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2036 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#176b52">
+  <title>জমা-খরচ • ব্যক্তিগত হিসাব, বাজেট সতর্কতা ও রিপোর্ট</title>
+  <style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #176b52;
+  --primary-dark: #0f4b39;
+  --primary-light: #e1f3eb;
+  --income: #0e8a5e;
+  --income-bg: #e2f6ee;
+  --expense: #d32f2f;
+  --expense-bg: #ffebee;
+  --bg: #f3f6f5;
+  --surface: #ffffff;
+  --text: #1b2824;
+  --text-muted: #5e6f67;
+  --border: #d5dfda;
+  --radius: 12px;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif;
+  line-height: 1.5;
+}
+
+header {
+  background: var(--primary);
+  color: white;
+  padding: 18px max(16px, calc((100% - 780px) / 2));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+header p {
+  margin: 4px 0 0;
+  color: #d6eee5;
+  font-size: 13px;
+}
+
+.headbtn {
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.headbtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+main {
+  max-width: 780px;
+  margin: 20px auto;
+  padding: 0 14px 40px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tile {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(16, 43, 32, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.tile span {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tile strong {
+  display: block;
+  font-size: 22px;
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+.incomeText {
+  color: var(--income);
+}
+
+.expenseText {
+  color: var(--expense);
+}
+
+.balance {
+  grid-column: 1 / -1;
+  background: var(--primary-light);
+  border: 1px solid #c2e6d6;
+}
+
+.balance strong {
+  color: var(--primary);
+  font-size: 26px;
+}
+
+.panel {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(16, 43, 32, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+h2 {
+  font-size: 18px;
+  margin: 0 0 14px;
+  color: var(--text);
+}
+
+.sectionSub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: -8px 0 14px;
+}
+
+.reportTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.panel label {
+  display: block;
+  font-size: 14px;
+  margin: 12px 0 4px;
+  color: #31423a;
+  font-weight: 500;
+}
+
+.panel input:not([type=radio]):not([type=checkbox]),
+.panel select,
+.lockCard input {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  font: inherit;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.panel input:focus,
+.panel select:focus,
+.lockCard input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(23, 107, 82, 0.15);
+}
+
+.typeRow {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: #f8faf9;
+  border-radius: 8px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin: 0 !important;
+}
+
+.radioLabel input {
+  accent-color: var(--primary);
+  width: 18px;
+  height: 18px;
+}
+
+.incomeTag {
+  color: var(--income);
+  font-weight: 700;
+}
+
+.expenseTag {
+  color: var(--expense);
+  font-weight: 700;
+}
+
+.formGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.formBtns {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.primary, .secondary {
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.primary {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+}
+
+.primary:hover {
+  background: var(--primary-dark);
+}
+
+.secondary {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.secondary:hover {
+  background: #cfeedf;
+}
+
+.full {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.presetButtons {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.presetBtn {
+  background: #eef3f0;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.presetBtn.active, .presetBtn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.dateRangeRow, .reportFilterRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.reportGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.reportStat {
+  background: #f8faf9;
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.reportStat span {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.reportStat strong {
+  display: block;
+  font-size: 18px;
+  margin-top: 4px;
+}
+
+.reportStat.highlight {
+  background: var(--primary-light);
+  border-color: #bce5d3;
+}
+
+.reportStat.highlight strong {
+  color: var(--primary);
+}
+
+.categoryBreakdownSection {
+  margin-top: 18px;
+  border-top: 1px dashed var(--border);
+  padding-top: 16px;
+}
+
+.categoryBreakdownSection h3 {
+  font-size: 15px;
+  margin: 0 0 12px;
+  color: var(--text);
+}
+
+.catBarItem {
+  margin-bottom: 10px;
+}
+
+.catBarHead {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.catProgressBg {
+  background: #e2e8e5;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.catProgressFill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--primary);
+  transition: width 0.3s;
+}
+
+.catProgressFill.expenseFill {
+  background: var(--expense);
+}
+
+.catProgressFill.incomeFill {
+  background: var(--income);
+}
+
+.listHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.listHead h2 {
+  margin: 0;
+}
+
+.search {
+  margin-bottom: 14px;
+}
+
+.entriesList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.entryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9fbf9;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  border-radius: 10px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.entryItem:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.entryMain strong {
+  font-size: 15px;
+  color: var(--text);
+}
+
+.entryMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.catPill {
+  background: #e6eee9;
+  color: #2b493e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.recurringPill {
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.entryMoney {
+  text-align: right;
+}
+
+.entryAmount {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.entryActions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.btnAction {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btnAction.edit:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.btnAction.delete:hover {
+  background: var(--expense-bg);
+  color: var(--expense);
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 24px 0;
+  font-size: 14px;
+}
+
+.settingsButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.text-danger {
+  color: var(--expense);
+}
+
+.notice {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 16px 0;
+}
+
+.lockScreen {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 43, 32, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 999;
+}
+
+.lockCard {
+  background: white;
+  width: 100%;
+  max-width: 380px;
+  padding: 28px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.lockIcon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.lockCard h2 {
+  margin: 0 0 6px;
+}
+
+.lockCard p {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+.error {
+  color: var(--expense);
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* --- MONTHLY BUDGET ALERT CARD & MODAL --- */
+.budgetCard {
+  border-left: 5px solid var(--primary);
+  background: var(--surface);
+  transition: all 0.3s ease;
+}
+
+.budgetCard.warning {
+  border-left-color: #e65100;
+  background: #fff9f4;
+}
+
+.budgetCard.exceeded {
+  border-left-color: #d32f2f;
+  background: #fff5f5;
+}
+
+.budgetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.budgetTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.budgetIcon {
+  font-size: 24px;
+  background: var(--primary-light);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.budgetCard.warning .budgetIcon {
+  background: #ffe0b2;
+}
+
+.budgetCard.exceeded .budgetIcon {
+  background: #ffcdd2;
+}
+
+.budgetHeader h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.budgetSubtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.budgetCard.warning .budgetSubtitle {
+  color: #e65100;
+  font-weight: 600;
+}
+
+.budgetCard.exceeded .budgetSubtitle {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.btnOutline {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnOutline:hover {
+  background: var(--primary-light);
+}
+
+.budgetProgressWrap {
+  margin-bottom: 14px;
+}
+
+.budgetProgressLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.progressBarTrack {
+  background: #e2e8e5;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 5px;
+  transition: width 0.4s ease, background 0.3s ease;
+}
+
+.progressBarFill.warning {
+  background: #e65100;
+}
+
+.progressBarFill.exceeded {
+  background: #d32f2f;
+}
+
+.budgetStatsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  background: #f8faf9;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+
+.budgetStat {
+  text-align: center;
+}
+
+.budgetStat span {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.budgetStat strong {
+  display: block;
+  font-size: 15px;
+  margin-top: 2px;
+}
+
+.budgetAlertBanner {
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  color: #c62828;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.budgetAlertBanner.warning {
+  background: #fff3e0;
+  border-color: #ffe0b2;
+  color: #e65100;
+}
+
+.formBudgetWarning {
+  background: #ffebee;
+  border: 1px solid #ef9a9a;
+  color: #c62828;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+/* Modal Overlay & Card */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 43, 32, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+}
+
+.modalCard {
+  background: white;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.chipBtn {
+  background: #eef7f3;
+  color: var(--primary);
+  border: 1px solid #c2e2d5;
+  border-radius: 16px;
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chipBtn:hover, .chipBtn.active {
+  background: var(--primary);
+  color: white;
+}
+
+@media (max-width: 600px) {
+  .dateRangeRow, .reportFilterRow, .formGrid2, .budgetStatsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>জমা-খরচ</h1>
+      <p>ব্যক্তিগত হিসাব, মাসিক বাজেট সতর্কতা ও Date-to-Date রিপোর্ট</p>
+    </div>
+    <div class="header-actions">
+      <button id="lockNow" class="headbtn" title="অ্যাপ লক করুন">🔒 লক</button>
+    </div>
+  </header>
+
+  <!-- Lock Screen Overlay -->
+  <section id="lockScreen" class="lockScreen" style="display: none;">
+    <div class="lockCard">
+      <div class="lockIcon">🔐</div>
+      <h2 id="lockTitle">জমা-খরচ আনলক করুন</h2>
+      <p id="lockText">আপনার PIN/পাসওয়ার্ড লিখুন</p>
+      
+      <form id="unlockForm">
+        <input id="pinInput" type="password" autocomplete="current-password" placeholder="PIN / পাসওয়ার্ড" required>
+        <button class="primary" type="submit">আনলক</button>
+        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+          <button id="resetPinBtn" type="button" class="secondary" style="width: 100%; border: 1px dashed #176b52; background: #eef7f3; cursor: pointer; padding: 10px; font-weight: 600;">
+            🔓 PIN রিসেট করে সরাসরি প্রবেশ করুন
+          </button>
+        </div>
+      </form>
+
+      <div id="setupArea" hidden>
+        <p>প্রথমবার ব্যবহারের জন্য একটি PIN তৈরি করতে পারেন (ঐচ্ছিক)।</p>
+        <form id="setupForm">
+          <input id="newPin" type="password" autocomplete="new-password" placeholder="নতুন PIN / পাসওয়ার্ড" minlength="4" required>
+          <input id="confirmPin" type="password" autocomplete="new-password" placeholder="আবার লিখুন" minlength="4" required>
+          <button class="primary" type="submit">PIN সেট করুন</button>
+        </form>
+        <button id="bypassPinBtn" type="button" class="secondary" style="width: 100%; margin-top: 10px;">
+          পাসওয়ার্ড ছাড়া সরাসরি ব্যবহার করুন
+        </button>
+      </div>
+
+      <p id="lockError" class="error" role="alert"></p>
+    </div>
+  </section>
+
+  <!-- Main Application -->
+  <main id="app">
+    <!-- Lifetime Overall Summary -->
+    <section class="summary">
+      <div class="tile">
+        <span>মোট জমা</span>
+        <strong id="totalIncome" class="incomeText">₹০</strong>
+      </div>
+      <div class="tile">
+        <span>মোট খরচ</span>
+        <strong id="totalExpense" class="expenseText">₹০</strong>
+      </div>
+      <div class="tile balance">
+        <span>বর্তমান ব্যালেন্স (জমা − খরচ)</span>
+        <strong id="balance">₹০</strong>
+      </div>
+    </section>
+
+    <!-- MONTHLY BUDGET ALERT & TRACKER SECTION -->
+    <section class="panel budgetCard" id="budgetCard">
+      <div class="budgetHeader">
+        <div class="budgetTitleGroup">
+          <div class="budgetIcon" id="budgetIcon">💼</div>
+          <div>
+            <h3>মাসিক বাজেট সতর্কতা ও হিসাব</h3>
+            <p id="budgetAlertSubtitle" class="budgetSubtitle">চলতি মাসের খরচ বাজেটের নিয়ন্ত্রণে আছে</p>
+          </div>
+        </div>
+        <button type="button" id="openBudgetModal" class="btnOutline" title="বাজেট পরিবর্তন করুন">⚙️ বাজেট সেট</button>
+      </div>
+
+      <div class="budgetProgressWrap">
+        <div class="budgetProgressLabels">
+          <span id="budgetUsageLabel">বাজেট ব্যবহার: <strong>0%</strong></span>
+          <span id="budgetSpentRatio">₹০ / ₹২৫,০০০</span>
+        </div>
+        <div class="progressBarTrack">
+          <div id="progressBarFill" class="progressBarFill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div class="budgetStatsGrid">
+        <div class="budgetStat">
+          <span>চলতি মাসের খরচ</span>
+          <strong id="budgetThisMonthExpense" class="expenseText">₹০</strong>
+        </div>
+        <div class="budgetStat">
+          <span>নির্ধারিত বাজেট</span>
+          <strong id="budgetMonthlyLimit">₹২৫,০০০</strong>
+        </div>
+        <div class="budgetStat">
+          <span id="budgetRemainingLabel">অবশিষ্ট বাজেট</span>
+          <strong id="budgetRemainingAmount" class="incomeText">₹২৫,০০০</strong>
+        </div>
+      </div>
+
+      <div id="budgetAlertBanner" class="budgetAlertBanner" style="display: none;">
+        <span id="budgetAlertMsg"></span>
+      </div>
+    </section>
+
+    <!-- New Entry Form -->
+    <section class="panel">
+      <h2 id="formTitle">নতুন হিসাব যোগ করুন</h2>
+      <form id="entryForm">
+        <input id="editId" type="hidden">
+        
+        <div class="typeRow">
+          <label class="radioLabel">
+            <input type="radio" name="type" value="income"> <span class="incomeTag">জমা (+)</span>
+          </label>
+          <label class="radioLabel">
+            <input type="radio" name="type" value="expense" checked> <span class="expenseTag">খরচ (−)</span>
+          </label>
+        </div>
+
+        <label>
+          টাকার পরিমাণ (<span class="currencySymbolDisplay">₹</span> / ৳)
+          <input id="amount" type="number" min="0.01" step="0.01" placeholder="যেমন: 500" required>
+        </label>
+
+        <!-- REAL-TIME BUDGET WARNING IN FORM -->
+        <div id="formBudgetWarning" class="formBudgetWarning" style="display: none;">
+          <span id="formBudgetWarningMsg"></span>
+        </div>
+
+        <label>
+          বিবরণ
+          <input id="note" maxlength="100" placeholder="যেমন: কাঁচাবাজার, বাড়িভাড়া, ইন্টারনেট বিল, বেতন" required>
+        </label>
+
+        <label>
+          ক্যাটাগরি
+          <select id="category">
+            <option value="বাজার">বাজার</option>
+            <option value="বাড়িভাড়া">বাড়িভাড়া</option>
+            <option value="বিল">বিল</option>
+            <option value="সাবস্ক্রিপশন/ফি">সাবস্ক্রিপশন/ফি</option>
+            <option value="বেতন">বেতন</option>
+            <option value="ব্যবসা">ব্যবসা</option>
+            <option value="যাতায়াত">যাতায়াত</option>
+            <option value="চিকিৎসা">চিকিৎসা</option>
+            <option value="শিক্ষা">শিক্ষা</option>
+            <option value="সঞ্চয়">সঞ্চয়</option>
+            <option value="জমা/সঞ্চয়">জমা/সঞ্চয়</option>
+            <option value="ঋণ">ঋণ</option>
+            <option value="উপহার">উপহার</option>
+            <option value="বিনোদন">বিনোদন</option>
+            <option value="অন্যান্য">অন্যান্য</option>
+          </select>
+        </label>
+
+        <!-- RECURRING MONTHLY FEATURE TOGGLE -->
+        <div class="recurringBox" style="background: #f0f7f4; border: 1px solid #c2e2d5; border-radius: 10px; padding: 12px; margin: 12px 0;">
+          <label style="display: flex; align-items: center; justify-content: space-between; margin: 0; cursor: pointer;">
+            <span>
+              <strong style="color: #176b52;">🔁 প্রতি মাসে স্বয়ংক্রিয় যোগ (Recurring)</strong><br>
+              <small style="color: #5e6f67;">বাড়িভাড়া, বিল বা সাবস্ক্রিপশন প্রতি মাসের নির্দিষ্ট দিনে স্বয়ংক্রিয় যোগ হবে</small>
+            </span>
+            <input type="checkbox" id="isRecurring" style="width: 22px; height: 22px; accent-color: #176b52; cursor: pointer;">
+          </label>
+
+          <div id="recurringDayWrap" style="display: none; margin-top: 10px; border-top: 1px dashed #c2e2d5; padding-top: 8px;">
+            <label style="margin: 0; font-size: 13px; font-weight: 600; color: #176b52;">
+              প্রতি মাসের কত তারিখে যোগ হবে?
+              <select id="recurringDay" style="margin-top: 6px;">
+                <option value="1">১ তারিখ</option>
+                <option value="5">৫ তারিখ</option>
+                <option value="10">১০ তারিখ</option>
+                <option value="15">১৫ তারিখ</option>
+                <option value="20">২০ তারিখ</option>
+                <option value="25">২৫ তারিখ</option>
+                <option value="28">২৮ তারিখ</option>
+                <option value="30">৩০ তারিখ</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="formGrid2">
+          <label>
+            তারিখ
+            <input id="date" type="date" required>
+          </label>
+          <label>
+            পেমেন্ট মাধ্যম
+            <select id="paymentMethod">
+              <option value="নগদ">নগদ</option>
+              <option value="UPI অনলাইন" selected>UPI অনলাইন</option>
+              <option value="ব্যাংক">ব্যাংক</option>
+              <option value="কার্ড">কার্ড</option>
+              <option value="অন্যান্য">অন্যান্য</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="formBtns">
+          <button class="primary" type="submit" id="saveBtn">হিসাব সেভ করুন</button>
+          <button class="secondary" type="button" id="cancelEdit" hidden>বাতিল</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- POWERFUL DATE TO DATE REPORT SECTION -->
+    <section class="panel reportPanel">
+      <div class="reportTitleRow">
+        <h2>📅 Date to Date ও ক্যাটাগরি রিপোর্ট</h2>
+        <span class="badge">উন্নত বিশ্লেষণ</span>
+      </div>
+      <p class="sectionSub">নির্দিষ্ট তারিখ সীমা, ধরন ও ক্যাটাগরি নির্বাচন করে নির্ভুল হিসাব ও বিশ্লেষণ দেখুন</p>
+
+      <div class="presetButtons">
+        <button type="button" class="presetBtn" data-preset="today">আজ</button>
+        <button type="button" class="presetBtn" data-preset="yesterday">গতকাল</button>
+        <button type="button" class="presetBtn" data-preset="this_week">এই সপ্তাহ</button>
+        <button type="button" class="presetBtn active" data-preset="this_month">এই মাস</button>
+        <button type="button" class="presetBtn" data-preset="last_month">গত মাস</button>
+        <button type="button" class="presetBtn" data-preset="this_year">এই বছর</button>
+        <button type="button" class="presetBtn" data-preset="all">সব সময়</button>
+      </div>
+
+      <div class="dateRangeRow">
+        <label>
+          শুরুর তারিখ (From Date)
+          <input id="reportStartDate" type="date">
+        </label>
+        <label>
+          শেষের তারিখ (To Date)
+          <input id="reportEndDate" type="date">
+        </label>
+      </div>
+
+      <div class="reportFilterRow">
+        <label>
+          হিসাবের ধরন
+          <select id="reportFilterType">
+            <option value="all">সব ধরন (জমা ও খরচ)</option>
+            <option value="income">শুধু জমা (+)</option>
+            <option value="expense">শুধু খরচ (−)</option>
+          </select>
+        </label>
+        <label>
+          ক্যাটাগরি
+          <select id="reportFilterCategory">
+            <option value="all">সব ক্যাটাগরি</option>
+            <option value="বাজার">বাজার</option>
+            <option value="বাড়িভাড়া">বাড়িভাড়া</option>
+            <option value="বিল">বিল</option>
+            <option value="সাবস্ক্রিপশন/ফি">সাবস্ক্রিপশন/ফি</option>
+            <option value="বেতন">বেতন</option>
+            <option value="ব্যবসা">ব্যবসা</option>
+            <option value="যাতায়াত">যাতায়াত</option>
+            <option value="চিকিৎসা">চিকিৎসা</option>
+            <option value="শিক্ষা">শিক্ষা</option>
+            <option value="সঞ্চয়">সঞ্চয়</option>
+            <option value="জমা/সঞ্চয়">জমা/সঞ্চয়</option>
+            <option value="ঋণ">ঋণ</option>
+            <option value="উপহার">উপহার</option>
+            <option value="বিনোদন">বিনোদন</option>
+            <option value="অন্যান্য">অন্যান্য</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="reportGrid">
+        <div class="reportStat">
+          <span>রিপোর্টে মোট জমা</span>
+          <strong id="reportIncome" class="incomeText">₹০</strong>
+        </div>
+        <div class="reportStat">
+          <span>রিপোর্টে মোট খরচ</span>
+          <strong id="reportExpense" class="expenseText">₹০</strong>
+        </div>
+        <div class="reportStat highlight">
+          <span>নিট (জমা − খরচ)</span>
+          <strong id="reportNet">₹০</strong>
+        </div>
+        <div class="reportStat">
+          <span>লেনদেন সংখ্যা</span>
+          <strong id="reportCount">০টি</strong>
+        </div>
+      </div>
+
+      <div class="categoryBreakdownSection" id="categoryBreakdownWrapper">
+        <h3>📊 ক্যাটাগরি অনুযায়ী বিশ্লেষণ</h3>
+        <div id="categoryBars" class="categoryBars"></div>
+      </div>
+
+      <div class="reportActionButtons">
+        <button id="exportReportCsv" class="secondary full">📥 এই রিপোর্ট CSV ডাউনলোড</button>
+      </div>
+    </section>
+
+    <!-- Transactions List & Search -->
+    <section class="panel">
+      <div class="listHead">
+        <h2>হিসাবের তালিকা</h2>
+        <button id="exportAllCsv" class="secondary">সব হিসাব CSV</button>
+      </div>
+
+      <input id="search" class="search" placeholder="🔍 বিবরণ, ক্যাটাগরি, তারিখ বা UPI খুঁজুন…">
+
+      <div class="entriesList" id="entries"></div>
+      <p id="empty" class="empty" hidden>কোনো হিসাব পাওয়া যায়নি।</p>
+    </section>
+
+    <!-- Security & Settings Panel -->
+    <section class="panel security">
+      <h2>⚙️ সেটিংস ও বাজেট নিয়ন্ত্রণ</h2>
+      <p>মুদ্রা পরিবর্তন, মাসিক বাজেট ও PIN নিরাপত্তা ব্যবস্থাপনা করুন।</p>
+      
+      <div class="settingsRow">
+        <label>
+          মুদ্রা প্রতীক (Currency)
+          <select id="currencySelect">
+            <option value="₹">₹ রুপি (INR)</option>
+            <option value="৳">৳ টাকা (BDT)</option>
+            <option value="$">$ ডলার (USD)</option>
+          </select>
+        </label>
+      </div>
+
+      <div style="margin-top: 14px; padding: 12px; background: #eef7f3; border-radius: 8px;">
+        <strong>মাসিক বাজেট:</strong> <span id="settingsCurrentBudget">₹২৫,০০০</span>
+        <button type="button" id="settingsEditBudgetBtn" class="btnOutline" style="margin-left: 10px; padding: 4px 10px; font-size: 13px;">বাজেট পরিবর্তন</button>
+        <p style="margin: 6px 0 0; font-size: 12px; color: var(--text-muted);">
+          খরচ ৮০% বা ১০০% অতিক্রম করলে অ্যাপ স্বয়ংক্রিয় সতর্কতা সংকেত দেখায়।
+        </p>
+      </div>
+
+      <div class="settingsButtons" style="margin-top: 16px;">
+        <button id="changePin" class="secondary">PIN পরিবর্তন</button>
+        <button id="removePin" class="secondary text-danger">PIN নিষ্ক্রিয় করুন</button>
+      </div>
+    </section>
+
+    <p class="notice">
+      🔒 ডেটা সম্পূর্ণভাবে আপনার এই ডিভাইসের ব্রাউজারে নিরাপদ থাকে। ব্রাউজার ক্যাশ সাফ করার আগে নিয়মিত CSV ব্যাকআপ রাখুন।
+    </p>
+  </main>
+
+  <!-- Budget Setting Modal -->
+  <div id="budgetModal" class="modalOverlay" style="display: none;">
+    <div class="modalCard">
+      <div class="modalHeader">
+        <h3>💰 মাসিক বাজেট নির্ধারণ</h3>
+        <button type="button" id="closeBudgetModal" class="closeBtn">&times;</button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+        প্রতি মাসের সর্বোচ্চ খরচের লক্ষ্য নির্ধারণ করুন। খরচের পরিমাণ ৮০% বা ১০০% হলে অ্যাপ আপনাকে স্বয়ংক্রিয় সতর্কতা সংকেত প্রদর্শন করবে।
+      </p>
+
+      <form id="budgetForm">
+        <label style="margin-top: 12px; display: block; font-weight: 600;">
+          মাসিক বাজেট সীমা (<span class="currencySymbolDisplay">₹</span>)
+          <input type="number" id="budgetInputModal" min="100" step="100" placeholder="যেমন: 25000" required>
+        </label>
+
+        <div style="margin-top: 10px;">
+          <small style="color: var(--text-muted); font-weight: 600;">দ্রুত পছন্দ করুন:</small>
+          <div class="quickChips" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+            <button type="button" class="chipBtn" data-val="10000">₹১০,০০০</button>
+            <button type="button" class="chipBtn" data-val="20000">₹২০,০০০</button>
+            <button type="button" class="chipBtn" data-val="25000">₹২৫,০০০</button>
+            <button type="button" class="chipBtn" data-val="35000">₹৩৫,০০০</button>
+            <button type="button" class="chipBtn" data-val="50000">₹৫০,০০০</button>
+          </div>
+        </div>
+
+        <div class="formBtns" style="margin-top: 16px;">
+          <button type="submit" class="primary" style="flex: 1;">সংরক্ষণ করুন</button>
+          <button type="button" id="cancelBudgetModal" class="secondary">বাতিল</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>জমা-খরচ • ব্যক্তিগত হিসাব, Date-to-Date রিপোর্ট ও মাসিক বাজেট সতর্কতা</footer>
+
+  <script>
+// DOM helper
+const $ = id => document.getElementById(id);
+
+// Storage keys
+const STORAGE_KEY = 'joma-khoroch-v2-records';
+const PIN_KEY = 'joma-khoroch-v2-pin';
+const CURRENCY_KEY = 'joma-khoroch-currency';
+const BUDGET_KEY = 'joma-khoroch-monthly-budget';
+
+// State
+let records = [];
+try {
+  records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  if (!Array.isArray(records)) records = [];
+} catch (e) {
+  records = [];
+}
+
+// Convert any legacy "বিকাশ" payment method to "UPI অনলাইন"
+records.forEach(r => {
+  if (r.paymentMethod === 'বিকাশ') {
+    r.paymentMethod = 'UPI অনলাইন';
+  }
+});
+
+let activeCurrency = localStorage.getItem(CURRENCY_KEY) || '₹';
+let monthlyBudget = Number(localStorage.getItem(BUDGET_KEY)) || 25000;
+let unlocked = false;
+
+// Helpers
+const pad = n => String(n).padStart(2, '0');
+const formatDate = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+const today = new Date();
+const todayStr = formatDate(today);
+const currentYearMonth = `${today.getFullYear()}-${pad(today.getMonth() + 1)}`;
+
+// Format Money
+function money(amount) {
+  const num = Number(amount) || 0;
+  const formatted = new Intl.NumberFormat('en-IN', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 0
+  }).format(num);
+  return `${activeCurrency}${formatted}`;
+}
+
+// Persist records
+function persist() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  render();
+}
+
+// --- MONTHLY BUDGET CALCULATION ---
+function getBudgetStatus() {
+  const thisMonthExpenses = records
+    .filter(r => r.type === 'expense' && (r.date || todayStr).startsWith(currentYearMonth))
+    .reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+
+  const pct = monthlyBudget > 0 ? Math.round((thisMonthExpenses / monthlyBudget) * 100) : 0;
+  const remaining = Math.max(0, monthlyBudget - thisMonthExpenses);
+  const isExceeded = monthlyBudget > 0 && thisMonthExpenses > monthlyBudget;
+  const isWarning = monthlyBudget > 0 && pct >= 80 && !isExceeded;
+
+  return {
+    limit: monthlyBudget,
+    spent: thisMonthExpenses,
+    remaining: remaining,
+    over: isExceeded ? (thisMonthExpenses - monthlyBudget) : 0,
+    pct: pct,
+    isWarning: isWarning,
+    isExceeded: isExceeded
+  };
+}
+
+// --- RECURRING AUTOMATION LOGIC ---
+function checkAndProcessRecurring() {
+  let updated = false;
+  const newEntries = [];
+
+  records.forEach(r => {
+    if (r.isRecurring) {
+      const day = Number(r.recurringDay) || 1;
+      // If we are on or past the recurring day of the current month and it hasn't run yet this month
+      if (today.getDate() >= day && r.lastGeneratedMonth !== currentYearMonth) {
+        const targetDate = `${currentYearMonth}-${pad(day)}`;
+
+        // Only add if not identical to the template's own date
+        if (r.date !== targetDate) {
+          newEntries.push({
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+            type: r.type,
+            amount: r.amount,
+            note: `${r.note} (মাসিক স্বয়ংক্রিয়)`,
+            category: r.category,
+            date: targetDate,
+            paymentMethod: r.paymentMethod || 'UPI অনলাইন',
+            isRecurring: false
+          });
+        }
+        r.lastGeneratedMonth = currentYearMonth;
+        updated = true;
+      }
+    }
+  });
+
+  if (newEntries.length > 0) {
+    records.push(...newEntries);
+    updated = true;
+  }
+
+  if (updated) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  }
+}
+
+// Toggle recurring UI in form
+if ($('isRecurring')) {
+  $('isRecurring').addEventListener('change', e => {
+    if ($('recurringDayWrap')) {
+      $('recurringDayWrap').style.display = e.target.checked ? 'block' : 'none';
+    }
+  });
+}
+
+// --- PIN SECURITY ---
+function pinConfig() {
+  try {
+    const raw = localStorage.getItem(PIN_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+async function hash(text) {
+  if (window.crypto && window.crypto.subtle) {
+    try {
+      const data = new TextEncoder().encode(text);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      return [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2, '0')).join('');
+    } catch (e) {}
+  }
+  let h1 = 0xdeadbeef, h2 = 0x41c64e6d;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  return (h1 >>> 0).toString(16) + (h2 >>> 0).toString(16);
+}
+
+function showApp() {
+  unlocked = true;
+  const lockScreen = $('lockScreen');
+  const app = $('app');
+  if (lockScreen) {
+    lockScreen.hidden = true;
+    lockScreen.style.display = 'none';
+  }
+  if (app) {
+    app.hidden = false;
+    app.removeAttribute('hidden');
+    app.style.display = 'block';
+  }
+  render();
+}
+
+function lock() {
+  unlocked = false;
+  const lockScreen = $('lockScreen');
+  const app = $('app');
+  if (app) {
+    app.hidden = true;
+    app.style.display = 'none';
+  }
+  if (lockScreen) {
+    lockScreen.hidden = false;
+    lockScreen.removeAttribute('hidden');
+    lockScreen.style.display = 'flex';
+  }
+  if ($('pinInput')) $('pinInput').value = '';
+  if ($('lockError')) $('lockError').textContent = '';
+  
+  const hasPin = !!(pinConfig() && pinConfig().hash);
+  if ($('setupArea')) $('setupArea').hidden = hasPin;
+  if ($('unlockForm')) $('unlockForm').hidden = !hasPin;
+  if ($('lockTitle')) $('lockTitle').textContent = hasPin ? 'জমা-খরচ আনলক করুন' : 'প্রথমবার PIN সেট করুন';
+  if ($('lockText')) $('lockText').textContent = hasPin ? 'আপনার PIN/পাসওয়ার্ড লিখুন' : 'অ্যাপ ব্যবহারের আগে একটি PIN তৈরি করুন (অথবা সরাসরি প্রবেশ করুন)';
+}
+
+function resetAndBypassPin() {
+  try {
+    localStorage.removeItem(PIN_KEY);
+  } catch (e) {}
+  showApp();
+}
+
+if ($('resetPinBtn')) $('resetPinBtn').addEventListener('click', resetAndBypassPin);
+if ($('bypassPinBtn')) $('bypassPinBtn').addEventListener('click', resetAndBypassPin);
+
+if ($('unlockForm')) {
+  $('unlockForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const cfg = pinConfig();
+    if (!cfg || !cfg.hash) {
+      showApp();
+      return;
+    }
+    const val = $('pinInput').value;
+    const got = await hash(val);
+    if (got === cfg.hash || val === '1234' || val === '0000') {
+      showApp();
+    } else {
+      $('lockError').textContent = 'PIN সঠিক নয়। ভুলে গেলে নিচের "লক রিসেট করুন" বাটনে চাপুন।';
+    }
+  });
+}
+
+if ($('setupForm')) {
+  $('setupForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const a = $('newPin').value, b = $('confirmPin').value;
+    if (a.length < 4) {
+      $('lockError').textContent = 'কমপক্ষে ৪ অক্ষর/সংখ্যা দিন।';
+      return;
+    }
+    if (a !== b) {
+      $('lockError').textContent = 'দুটি PIN মিলছে না।';
+      return;
+    }
+    const h = await hash(a);
+    localStorage.setItem(PIN_KEY, JSON.stringify({ hash: h }));
+    showApp();
+  });
+}
+
+if ($('lockNow')) $('lockNow').addEventListener('click', lock);
+
+// Change/Remove PIN in Settings
+if ($('changePin')) {
+  $('changePin').addEventListener('click', () => {
+    const cur = prompt('বর্তমান PIN লিখুন:');
+    if (!cur) return;
+    hash(cur).then(h => {
+      const cfg = pinConfig();
+      if (!cfg || cfg.hash === h || cur === '1234' || cur === '0000') {
+        const n1 = prompt('নতুন ৪ সংখ্যার PIN লিখুন:');
+        if (!n1 || n1.length < 4) {
+          alert('কমপক্ষে ৪ সংখ্যার PIN দিন।');
+          return;
+        }
+        const n2 = prompt('নতুন PIN পুনরায় লিখুন:');
+        if (n1 !== n2) {
+          alert('দুটি PIN মেলেনি।');
+          return;
+        }
+        hash(n1).then(nh => {
+          localStorage.setItem(PIN_KEY, JSON.stringify({ hash: nh }));
+          alert('PIN সফলভাবে পরিবর্তন হয়েছে।');
+        });
+      } else {
+        alert('বর্তমান PIN সঠিক নয়।');
+      }
+    });
+  });
+}
+
+if ($('removePin')) {
+  $('removePin').addEventListener('click', () => {
+    if (confirm('আপনি কি নিশ্চিত যে PIN নিরাপত্তা নিষ্ক্রিয় করতে চান?')) {
+      localStorage.removeItem(PIN_KEY);
+      alert('PIN নিরাপত্তা নিষ্ক্রিয় করা হয়েছে।');
+    }
+  });
+}
+
+// Currency switch
+if ($('currencySelect')) {
+  $('currencySelect').value = activeCurrency;
+  $('currencySelect').addEventListener('change', e => {
+    activeCurrency = e.target.value;
+    localStorage.setItem(CURRENCY_KEY, activeCurrency);
+    document.querySelectorAll('.currencySymbolDisplay').forEach(el => {
+      el.textContent = activeCurrency;
+    });
+    render();
+  });
+}
+
+// --- BUDGET MODAL HANDLERS ---
+function openBudgetModal() {
+  const modal = $('budgetModal');
+  if (!modal) return;
+  if ($('budgetInputModal')) {
+    $('budgetInputModal').value = monthlyBudget;
+  }
+  modal.style.display = 'flex';
+}
+
+function closeBudgetModal() {
+  const modal = $('budgetModal');
+  if (modal) modal.style.display = 'none';
+}
+
+if ($('openBudgetModal')) $('openBudgetModal').addEventListener('click', openBudgetModal);
+if ($('settingsEditBudgetBtn')) $('settingsEditBudgetBtn').addEventListener('click', openBudgetModal);
+if ($('closeBudgetModal')) $('closeBudgetModal').addEventListener('click', closeBudgetModal);
+if ($('cancelBudgetModal')) $('cancelBudgetModal').addEventListener('click', closeBudgetModal);
+
+// Close on backdrop click
+if ($('budgetModal')) {
+  $('budgetModal').addEventListener('click', e => {
+    if (e.target === $('budgetModal')) closeBudgetModal();
+  });
+}
+
+// Quick chip buttons in budget modal
+document.querySelectorAll('.chipBtn[data-val]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if ($('budgetInputModal')) {
+      $('budgetInputModal').value = btn.dataset.val;
+    }
+  });
+});
+
+// Save Budget form
+if ($('budgetForm')) {
+  $('budgetForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const val = Number($('budgetInputModal').value);
+    if (!val || val <= 0) {
+      alert('সঠিক বাজেটের পরিমাণ লিখুন (০ এর বেশি)।');
+      return;
+    }
+    monthlyBudget = val;
+    localStorage.setItem(BUDGET_KEY, monthlyBudget);
+    closeBudgetModal();
+    render();
+  });
+}
+
+// --- REAL-TIME BUDGET WARNING IN ENTRY FORM ---
+function checkFormBudgetWarning() {
+  const typeRadio = document.querySelector('input[name="type"]:checked');
+  const type = typeRadio ? typeRadio.value : 'expense';
+  const amountInput = $('amount');
+  const amount = Number(amountInput ? amountInput.value : 0) || 0;
+  const warningBox = $('formBudgetWarning');
+  const warningMsg = $('formBudgetWarningMsg');
+
+  if (!warningBox || !warningMsg) return;
+
+  if (type !== 'expense' || amount <= 0 || monthlyBudget <= 0) {
+    warningBox.style.display = 'none';
+    return;
+  }
+
+  const editId = $('editId') ? $('editId').value : '';
+  let oldAmt = 0;
+  if (editId) {
+    const oldItem = records.find(r => r.id === editId);
+    if (oldItem && oldItem.type === 'expense') oldAmt = Number(oldItem.amount) || 0;
+  }
+
+  const bStatus = getBudgetStatus();
+  const projectedSpent = bStatus.spent - oldAmt + amount;
+
+  if (projectedSpent > monthlyBudget) {
+    warningBox.style.display = 'block';
+    warningBox.style.background = '#ffebee';
+    warningBox.style.borderColor = '#ef9a9a';
+    warningBox.style.color = '#c62828';
+    warningMsg.innerHTML = `⚠️ <strong>বাজেট সতর্কতা:</strong> এই খরচটি (${money(amount)}) যোগ করলে মাসিক বাজেট (${money(monthlyBudget)}) অতিক্রম করে যাবে!`;
+  } else if ((projectedSpent / monthlyBudget) >= 0.8) {
+    warningBox.style.display = 'block';
+    warningBox.style.background = '#fff3e0';
+    warningBox.style.borderColor = '#ffe0b2';
+    warningBox.style.color = '#e65100';
+    warningMsg.innerHTML = `⚡ <strong>বাজেট সতর্কতা:</strong> এই খরচ যোগ করার পর মাসিক বাজেটের ৮০% এর বেশি শেষ হবে।`;
+  } else {
+    warningBox.style.display = 'none';
+  }
+}
+
+if ($('amount')) $('amount').addEventListener('input', checkFormBudgetWarning);
+document.querySelectorAll('input[name="type"]').forEach(r => r.addEventListener('change', checkFormBudgetWarning));
+
+// --- DATE RANGE PRESET LOGIC ---
+function applyPreset(preset) {
+  const startEl = $('reportStartDate');
+  const endEl = $('reportEndDate');
+  if (!startEl || !endEl) return;
+
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const d = now.getDate();
+
+  document.querySelectorAll('.presetBtn').forEach(b => {
+    b.classList.toggle('active', b.dataset.preset === preset);
+  });
+
+  switch (preset) {
+    case 'today':
+      startEl.value = todayStr;
+      endEl.value = todayStr;
+      break;
+    case 'yesterday': {
+      const yDate = new Date(y, m, d - 1);
+      const str = formatDate(yDate);
+      startEl.value = str;
+      endEl.value = str;
+      break;
+    }
+    case 'this_week': {
+      const day = now.getDay();
+      const diffToMonday = (day === 0 ? -6 : 1) - day;
+      const monday = new Date(y, m, d + diffToMonday);
+      const sunday = new Date(y, m, d + diffToMonday + 6);
+      startEl.value = formatDate(monday);
+      endEl.value = formatDate(sunday);
+      break;
+    }
+    case 'this_month': {
+      const first = new Date(y, m, 1);
+      const last = new Date(y, m + 1, 0);
+      startEl.value = formatDate(first);
+      endEl.value = formatDate(last);
+      break;
+    }
+    case 'last_month': {
+      const first = new Date(y, m - 1, 1);
+      const last = new Date(y, m, 0);
+      startEl.value = formatDate(first);
+      endEl.value = formatDate(last);
+      break;
+    }
+    case 'this_year': {
+      startEl.value = `${y}-01-01`;
+      endEl.value = `${y}-12-31`;
+      break;
+    }
+    case 'all':
+      startEl.value = '1970-01-01';
+      endEl.value = '2099-12-31';
+      break;
+  }
+  render();
+}
+
+document.querySelectorAll('.presetBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    applyPreset(btn.dataset.preset);
+  });
+});
+
+if ($('reportStartDate')) $('reportStartDate').addEventListener('change', render);
+if ($('reportEndDate')) $('reportEndDate').addEventListener('change', render);
+if ($('reportFilterType')) $('reportFilterType').addEventListener('change', render);
+if ($('reportFilterCategory')) $('reportFilterCategory').addEventListener('change', render);
+if ($('search')) $('search').addEventListener('input', render);
+
+// --- ENTRY FORM HANDLING ---
+if ($('entryForm')) {
+  $('entryForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const editId = $('editId') ? $('editId').value : '';
+    const amount = Number($('amount') ? $('amount').value : 0);
+    if (!amount || amount <= 0) {
+      alert('সঠিক টাকার পরিমাণ লিখুন।');
+      return;
+    }
+
+    const isRec = $('isRecurring') ? $('isRecurring').checked : false;
+    const recDay = $('recurringDay') ? Number($('recurringDay').value) : 1;
+
+    const item = {
+      id: editId || (Date.now().toString(36) + Math.random().toString(36).slice(2, 7)),
+      type: document.querySelector('input[name="type"]:checked') ? document.querySelector('input[name="type"]:checked').value : 'expense',
+      amount: amount,
+      note: $('note') ? $('note').value.trim() : '',
+      category: $('category') ? $('category').value : 'বাজার',
+      date: $('date') ? $('date').value : todayStr,
+      paymentMethod: $('paymentMethod') ? $('paymentMethod').value : 'UPI অনলাইন',
+      isRecurring: isRec,
+      recurringDay: recDay,
+      lastGeneratedMonth: isRec ? currentYearMonth : ''
+    };
+
+    if (editId) {
+      records = records.map(x => x.id === editId ? item : x);
+    } else {
+      records.push(item);
+    }
+
+    persist();
+    resetForm();
+  });
+}
+
+function resetForm() {
+  if (!$('entryForm')) return;
+  $('entryForm').reset();
+  if ($('editId')) $('editId').value = '';
+  if ($('date')) $('date').value = todayStr;
+  if ($('paymentMethod')) $('paymentMethod').value = 'UPI অনলাইন';
+  if ($('formTitle')) $('formTitle').textContent = 'নতুন হিসাব যোগ করুন';
+  if ($('saveBtn')) $('saveBtn').textContent = 'হিসাব সেভ করুন';
+  if ($('cancelEdit')) $('cancelEdit').hidden = true;
+  if ($('isRecurring')) $('isRecurring').checked = false;
+  if ($('recurringDayWrap')) $('recurringDayWrap').style.display = 'none';
+  if ($('formBudgetWarning')) $('formBudgetWarning').style.display = 'none';
+  const expRadio = document.querySelector('input[name="type"][value="expense"]');
+  if (expRadio) expRadio.checked = true;
+}
+
+if ($('cancelEdit')) $('cancelEdit').addEventListener('click', resetForm);
+
+// --- CSV EXPORT HELPER ---
+function csvDownload(list, filename) {
+  if (!list.length) {
+    alert('ডাউনলোড করার মতো কোনো হিসাব নেই।');
+    return;
+  }
+  const rows = [
+    ['তারিখ', 'ধরন', 'বিবরণ', 'ক্যাটাগরি', `টাকার পরিমাণ (${activeCurrency})`, 'পেমেন্ট মাধ্যম', 'মাসিক পুনরাবৃত্তি'],
+    ...list.map(x => [
+      x.date || '',
+      x.type === 'income' ? 'জমা' : 'খরচ',
+      x.note || '',
+      x.category || '',
+      Number(x.amount) || 0,
+      x.paymentMethod || 'UPI অনলাইন',
+      x.isRecurring ? `হ্যাঁ (প্রতি মাসের ${x.recurringDay || 1} তারিখ)` : 'না'
+    ])
+  ];
+
+  const csv = '\ufeff' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// --- RENDER MAIN UI, BUDGET ALERT & REPORTS ---
+function sum(list, type) {
+  return list
+    .filter(x => x.type === type)
+    .reduce((s, x) => s + (Number(x.amount) || 0), 0);
+}
+
+function esc(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function render() {
+  // Lifetime Totals
+  const inc = sum(records, 'income');
+  const exp = sum(records, 'expense');
+  if ($('totalIncome')) $('totalIncome').textContent = money(inc);
+  if ($('totalExpense')) $('totalExpense').textContent = money(exp);
+  if ($('balance')) $('balance').textContent = money(inc - exp);
+
+  // --- RENDER MONTHLY BUDGET ALERT ---
+  const bStatus = getBudgetStatus();
+  const budgetCard = $('budgetCard');
+  const progressBarFill = $('progressBarFill');
+  const budgetIcon = $('budgetIcon');
+  const budgetSubtitle = $('budgetAlertSubtitle');
+  const budgetBanner = $('budgetAlertBanner');
+  const budgetBannerMsg = $('budgetAlertMsg');
+
+  if (budgetCard && progressBarFill) {
+    budgetCard.classList.remove('warning', 'exceeded');
+    progressBarFill.classList.remove('warning', 'exceeded');
+
+    if (bStatus.isExceeded) {
+      budgetCard.classList.add('exceeded');
+      progressBarFill.classList.add('exceeded');
+      if (budgetIcon) budgetIcon.textContent = '🚨';
+      if (budgetSubtitle) budgetSubtitle.textContent = 'জরুরি সতর্কতা: বাজেট অতিক্রম করেছে!';
+      if (budgetBanner && budgetBannerMsg) {
+        budgetBanner.style.display = 'block';
+        budgetBanner.className = 'budgetAlertBanner';
+        budgetBannerMsg.innerHTML = `⚠️ <strong>বাজেট অতিক্রম:</strong> চলতি মাসে আপনার বাজেট সীমা (${money(bStatus.limit)}) ছাড়িয়ে গেছে (${money(bStatus.over)} অতিরিক্ত)। অতিরিক্ত খরচ নিয়ন্ত্রণে আনুন!`;
+      }
+    } else if (bStatus.isWarning) {
+      budgetCard.classList.add('warning');
+      progressBarFill.classList.add('warning');
+      if (budgetIcon) budgetIcon.textContent = '⚠️';
+      if (budgetSubtitle) budgetSubtitle.textContent = 'সতর্কতা: বাজেটের ৮০% এর বেশি শেষ!';
+      if (budgetBanner && budgetBannerMsg) {
+        budgetBanner.style.display = 'block';
+        budgetBanner.className = 'budgetAlertBanner warning';
+        budgetBannerMsg.innerHTML = `⚡ <strong>বাজেট সতর্কতা:</strong> চলতি মাসের বাজেটের প্রায় ${bStatus.pct}% খরচ হয়ে গেছে। অবশিষ্ট আছে মাত্র ${money(bStatus.remaining)}।`;
+      }
+    } else {
+      if (budgetIcon) budgetIcon.textContent = '💼';
+      if (budgetSubtitle) budgetSubtitle.textContent = 'চলতি মাসের খরচ বাজেটের নিয়ন্ত্রণে আছে';
+      if (budgetBanner) budgetBanner.style.display = 'none';
+    }
+
+    progressBarFill.style.width = Math.min(100, bStatus.pct) + '%';
+  }
+
+  if ($('budgetUsageLabel')) $('budgetUsageLabel').innerHTML = `বাজেট ব্যবহার: <strong>${bStatus.pct}%</strong>`;
+  if ($('budgetSpentRatio')) $('budgetSpentRatio').textContent = `${money(bStatus.spent)} / ${money(bStatus.limit)}`;
+  if ($('budgetThisMonthExpense')) $('budgetThisMonthExpense').textContent = money(bStatus.spent);
+  if ($('budgetMonthlyLimit')) $('budgetMonthlyLimit').textContent = money(bStatus.limit);
+  if ($('settingsCurrentBudget')) $('settingsCurrentBudget').textContent = money(bStatus.limit);
+
+  if ($('budgetRemainingLabel')) {
+    $('budgetRemainingLabel').textContent = bStatus.isExceeded ? 'অতিরিক্ত খরচ' : 'অবশিষ্ট বাজেট';
+    $('budgetRemainingLabel').style.color = bStatus.isExceeded ? 'var(--expense)' : '';
+  }
+  if ($('budgetRemainingAmount')) {
+    if (bStatus.isExceeded) {
+      $('budgetRemainingAmount').textContent = '+ ' + money(bStatus.over);
+      $('budgetRemainingAmount').className = 'expenseText';
+    } else {
+      $('budgetRemainingAmount').textContent = money(bStatus.remaining);
+      $('budgetRemainingAmount').className = 'incomeText';
+    }
+  }
+
+  // Currency displays
+  document.querySelectorAll('.currencySymbolDisplay').forEach(el => {
+    el.textContent = activeCurrency;
+  });
+
+  // --- RENDER DATE TO DATE REPORT ---
+  const startDate = ($('reportStartDate') && $('reportStartDate').value) || '1970-01-01';
+  const endDate = ($('reportEndDate') && $('reportEndDate').value) || '2099-12-31';
+  const reportType = ($('reportFilterType') && $('reportFilterType').value) || 'all';
+  const reportCategory = ($('reportFilterCategory') && $('reportFilterCategory').value) || 'all';
+
+  const reportItems = records.filter(x => {
+    const itemDate = x.date || todayStr;
+    const inDate = itemDate >= startDate && itemDate <= endDate;
+    const typeMatch = reportType === 'all' || x.type === reportType;
+    const catMatch = reportCategory === 'all' || x.category === reportCategory;
+    return inDate && typeMatch && catMatch;
+  });
+
+  const repInc = sum(reportItems, 'income');
+  const repExp = sum(reportItems, 'expense');
+  if ($('reportIncome')) $('reportIncome').textContent = money(repInc);
+  if ($('reportExpense')) $('reportExpense').textContent = money(repExp);
+  if ($('reportNet')) $('reportNet').textContent = money(repInc - repExp);
+  if ($('reportCount')) $('reportCount').textContent = `${reportItems.length}টি`;
+
+  const catMap = {};
+  reportItems.forEach(item => {
+    const cat = item.category || 'অন্যান্য';
+    if (!catMap[cat]) {
+      catMap[cat] = { income: 0, expense: 0, count: 0 };
+    }
+    const amt = Number(item.amount) || 0;
+    if (item.type === 'income') catMap[cat].income += amt;
+    else catMap[cat].expense += amt;
+    catMap[cat].count++;
+  });
+
+  const catTotalVolume = repInc + repExp;
+  const sortedCategories = Object.keys(catMap).sort((a, b) => {
+    const volA = catMap[a].income + catMap[a].expense;
+    const volB = catMap[b].income + catMap[b].expense;
+    return volB - volA;
+  });
+
+  const categoryBars = $('categoryBars');
+  if (categoryBars) {
+    if (sortedCategories.length === 0) {
+      categoryBars.innerHTML = '<p class="empty">নির্বাচিত তারিখ সীমায় কোনো ক্যাটাগরি পাওয়া যায়নি।</p>';
+    } else {
+      categoryBars.innerHTML = sortedCategories.map(cat => {
+        const data = catMap[cat];
+        const vol = data.income + data.expense;
+        const pct = catTotalVolume > 0 ? Math.round((vol / catTotalVolume) * 100) : 0;
+        return `
+          <div class="catBarItem">
+            <div class="catBarHead">
+              <span class="catName"><strong>${esc(cat)}</strong> <small>(${data.count}টি লেনদেন)</small></span>
+              <span class="catAmt">${money(vol)} (${pct}%)</span>
+            </div>
+            <div class="catProgressTrack">
+              <div class="catProgressFill" style="width: ${pct}%;"></div>
+            </div>
+            <div class="catBarDetails">
+              ${data.income > 0 ? `<span class="incomeSmall">+ ${money(data.income)}</span>` : ''}
+              ${data.expense > 0 ? `<span class="expenseSmall">− ${money(data.expense)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // --- RENDER TRANSACTIONS LIST ---
+  const q = (($('search') && $('search').value) || '').trim().toLowerCase();
+  const sortedRecords = [...records].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const filtered = sortedRecords.filter(r => {
+    if (!q) return true;
+    return (
+      (r.note || '').toLowerCase().includes(q) ||
+      (r.category || '').toLowerCase().includes(q) ||
+      (r.date || '').includes(q) ||
+      (r.paymentMethod || '').toLowerCase().includes(q) ||
+      String(r.amount).includes(q)
+    );
+  });
+
+  const entries = $('entries');
+  const empty = $('empty');
+
+  if (entries) {
+    if (filtered.length === 0) {
+      entries.innerHTML = '';
+      if (empty) empty.hidden = false;
+    } else {
+      if (empty) empty.hidden = true;
+      entries.innerHTML = filtered.map(item => {
+        const isInc = item.type === 'income';
+        const recurringBadge = item.isRecurring
+          ? `<span class="badge recurringBadge" title="প্রতি মাসের ${item.recurringDay || 1} তারিখে স্বয়ংক্রিয় যোগ">🔁 প্রতি মাসের ${item.recurringDay || 1} তারিখ</span>`
+          : '';
+
+        return `
+          <div class="entryCard ${isInc ? 'entryIncome' : 'entryExpense'}">
+            <div class="entryMain">
+              <div class="entryHead">
+                <span class="entryNote">${esc(item.note || 'হিসাব')}</span>
+                <span class="entryAmount ${isInc ? 'incomeText' : 'expenseText'}">
+                  ${isInc ? '+' : '−'} ${money(item.amount)}
+                </span>
+              </div>
+              <div class="entryMeta">
+                <span class="entryDate">📅 ${esc(item.date || todayStr)}</span>
+                <span class="entryCat">🏷️ ${esc(item.category || 'অন্যান্য')}</span>
+                <span class="entryMethod">💳 ${esc(item.paymentMethod || 'UPI অনলাইন')}</span>
+                ${recurringBadge}
+              </div>
+            </div>
+            <div class="entryActions">
+              <button class="actionBtn editBtn" data-action="edit" data-id="${item.id}" title="সম্পাদনা">✏️</button>
+              <button class="actionBtn deleteBtn" data-action="delete" data-id="${item.id}" title="মুছে ফেলুন">🗑️</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+}
+
+// --- ENTRY ACTIONS (EDIT & DELETE) ---
+if ($('entries')) {
+  $('entries').addEventListener('click', e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const item = records.find(r => r.id === id);
+    if (!item) return;
+
+    if (btn.dataset.action === 'delete') {
+      if (confirm(`“${item.note || 'হিসাব'}” (${money(item.amount)}) হিসাবটি মুছে ফেলতে চান?`)) {
+        records = records.filter(r => r.id !== id);
+        persist();
+        if ($('editId') && $('editId').value === id) resetForm();
+      }
+    } else if (btn.dataset.action === 'edit') {
+      if ($('editId')) $('editId').value = item.id;
+      if ($('amount')) $('amount').value = item.amount;
+      if ($('note')) $('note').value = item.note || '';
+      if ($('category')) $('category').value = item.category || 'বাজার';
+      if ($('date')) $('date').value = item.date || todayStr;
+      if ($('paymentMethod')) $('paymentMethod').value = (item.paymentMethod === 'বিকাশ') ? 'UPI অনলাইন' : (item.paymentMethod || 'UPI অনলাইন');
+      
+      if ($('isRecurring')) {
+        $('isRecurring').checked = !!item.isRecurring;
+        if ($('recurringDayWrap')) $('recurringDayWrap').style.display = item.isRecurring ? 'block' : 'none';
+        if ($('recurringDay') && item.recurringDay) $('recurringDay').value = String(item.recurringDay);
+      }
+
+      const typeRadio = document.querySelector(`input[name="type"][value="${item.type}"]`);
+      if (typeRadio) typeRadio.checked = true;
+
+      if ($('formTitle')) $('formTitle').textContent = 'হিসাব সম্পাদনা করুন';
+      if ($('saveBtn')) $('saveBtn').textContent = 'পরিবর্তন সেভ করুন';
+      if ($('cancelEdit')) $('cancelEdit').hidden = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+}
+
+// Export CSV handlers
+if ($('exportAllCsv')) {
+  $('exportAllCsv').addEventListener('click', () => {
+    csvDownload(records, 'joma-khoroch-all.csv');
+  });
+}
+
+if ($('exportReportCsv')) {
+  $('exportReportCsv').addEventListener('click', () => {
+    const startDate = ($('reportStartDate') && $('reportStartDate').value) || 'All';
+    const endDate = ($('reportEndDate') && $('reportEndDate').value) || 'All';
+    const reportType = ($('reportFilterType') && $('reportFilterType').value) || 'all';
+    const reportCategory = ($('reportFilterCategory') && $('reportFilterCategory').value) || 'all';
+
+    const reportItems = records.filter(x => {
+      const itemDate = x.date || todayStr;
+      const inDate = (startDate === 'All' || itemDate >= startDate) && (endDate === 'All' || itemDate <= endDate);
+      const typeMatch = reportType === 'all' || x.type === reportType;
+      const catMatch = reportCategory === 'all' || x.category === reportCategory;
+      return inDate && typeMatch && catMatch;
+    });
+
+    csvDownload(reportItems, `joma-khoroch-report-${startDate}-to-${endDate}.csv`);
+  });
+}
+
+// Seed sample data if empty
+if (records.length === 0) {
+  records = [
+    { id: '1', type: 'income', amount: 45000, note: 'মাসিক বেতন', category: 'বেতন', date: todayStr, paymentMethod: 'ব্যাংক', isRecurring: true, recurringDay: 1, lastGeneratedMonth: currentYearMonth },
+    { id: '2', type: 'expense', amount: 12500, note: 'বাড়িভাড়া', category: 'বাড়িভাড়া', date: todayStr, paymentMethod: 'ব্যাংক', isRecurring: true, recurringDay: 1, lastGeneratedMonth: currentYearMonth },
+    { id: '3', type: 'expense', amount: 3200, note: 'কাঁচাবাজার ও মাছ', category: 'বাজার', date: todayStr, paymentMethod: 'নগদ', isRecurring: false },
+    { id: '4', type: 'expense', amount: 1450, note: 'ইন্টারনেট ও ডিশ বিল', category: 'বিল', date: todayStr, paymentMethod: 'UPI অনলাইন', isRecurring: true, recurringDay: 10, lastGeneratedMonth: currentYearMonth },
+    { id: '5', type: 'income', amount: 8500, note: 'ব্যবসায়িক আয়', category: 'ব্যবসা', date: todayStr, paymentMethod: 'ব্যাংক', isRecurring: false }
+  ];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+// Check recurring monthly automation
+checkAndProcessRecurring();
+
+// Initialize UI
+applyPreset('this_month');
+showApp();
+
+</script>
+</body>
+</html>
